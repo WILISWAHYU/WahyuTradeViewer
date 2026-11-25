@@ -1,17 +1,16 @@
 name: Build Wahyu Trade Viewer
 
-on:
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 21
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -20,22 +19,16 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Extract source code
+      - name: Extract source
         run: |
-          mkdir -p source-archive
-          unzip src.zip -d source-archive
+          unzip src.zip -d extracted
+          mkdir -p src
+          cp -r extracted/* src/
 
-          if [ -d source-archive/src ]; then
-            cp -a source-archive/src ./src
-          else
-            mkdir -p src
-            cp -a source-archive/. ./src/
-          fi
-
-      - name: Build Minecraft mod
+      - name: Build mod
         run: gradle build
 
-      - name: Upload mod JAR
+      - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: WahyuTradeViewer-JAR
